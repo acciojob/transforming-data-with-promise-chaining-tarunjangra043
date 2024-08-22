@@ -1,34 +1,44 @@
-function getNumbers() {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve([1, 2, 3, 4]);
-        }, 3000);
-    });
+const inputElement = document.getElementById('ip');
+const buttonElement = document.getElementById('btn');
+const outputElement = document.getElementById('output');
+
+function updateOutput(message) {
+  outputElement.textContent = message;
 }
 
-function filterEvenNumbers(numbers) {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            const evenNumbers = numbers.filter(num => num % 2 === 0);
-            document.getElementById('output').innerText = evenNumbers.join(', ');
-            resolve(evenNumbers);
-        }, 1000); 
-    });
+function delayPromise(value, delay) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(value);
+    }, delay);
+  });
 }
 
-function multiplyNumbers(numbers) {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            const multipliedNumbers = numbers.map(num => num * 2);
-            document.getElementById('output').innerText = multipliedNumbers.join(', ');
-            resolve(multipliedNumbers);
-        }, 2000); 
-    });
-}
+buttonElement.addEventListener('click', () => {
+  const initialNumber = Number(inputElement.value);
 
-getNumbers()
-    .then(filterEvenNumbers)
-    .then(multiplyNumbers)
-    .catch(error => {
-        console.error('Error:', error);
+  delayPromise(initialNumber, 2000)
+    .then((number) => {
+      updateOutput(`Result: ${number}`);
+      return delayPromise(number * 2, 1000);
+    })
+    .then((number) => {
+      updateOutput(`Result: ${number}`);
+      return delayPromise(number - 3, 1000);
+    })
+    .then((number) => {
+      updateOutput(`Result: ${number}`);
+      return delayPromise(number / 2, 1000);
+    })
+    .then((number) => {
+      updateOutput(`Result: ${number}`);
+      return delayPromise(number + 10, 1000);
+    })
+    .then((finalResult) => {
+      updateOutput(`Final Result: ${finalResult}`);
+    })
+    .catch((error) => {
+      console.error("Error in promise chain:", error);
+      updateOutput("An error occurred during the process.");
     });
+});
